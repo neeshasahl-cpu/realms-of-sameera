@@ -352,6 +352,35 @@ function firework(k){
   }
   return g;
 }
+// an Ent after the paintings of Treebeard: gnarled bark, craggy face, twig beard, branches for a crown
+function entIcon(hobbits){
+  const BARK="#b9a27c",DARK="#7a6240",MOSS="#5f7a3e",MOSS2="#7d9a4a";
+  let g=`<g class="sway">`;
+  // roots and a long, gnarled body that narrows to the shoulders
+  g+=`<path d="M-7,15 Q-5,13 -4.6,8 Q-5.6,-2 -4.4,-8 Q-5,-13 -3,-15.5 L3,-15.5 Q5,-13 4.4,-8 Q5.8,-2 4.8,8 Q5.2,13 7.4,15 Q3,14.4 1.6,15.6 Q0,14 -1.6,15.6 Q-3.4,14.4 -7,15 Z" fill="${BARK}" stroke="${INK}" stroke-width=".9" stroke-linejoin="round"/>`;
+  g+=`<path d="M-3.2,14 Q-4,4 -3,-6 M-1,14.4 Q-1.6,6 -.8,0 M1.4,14.4 Q2,8 1.4,1 M3.4,13.6 Q4.2,4 3.2,-6 M-4,9 l1.6,-1 M3.6,6 l-1.4,-1.2" fill="none" stroke="${DARK}" stroke-width=".5" stroke-linecap="round"/>`;
+  g+=`<path d="M-7,15 l-2.6,.8 M7.4,15 l2.8,.8 M-1.6,15.6 l-.6,1.6 M1.6,15.6 l.8,1.6" fill="none" stroke="${INK}" stroke-width=".8" stroke-linecap="round"/>`;
+  // arms: one reaching up and out with twig fingers, one hanging long by his side
+  g+=`<path d="M-4.4,-6 Q-9,-6 -11,-11 Q-12,-14 -13.6,-15" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M-4.4,-6 Q-9,-6 -11,-11 Q-12,-14 -13.6,-15" fill="none" stroke="${BARK}" stroke-width="1.5" stroke-linecap="round"/>`;
+  g+=`<path d="M-13.6,-15 l-2,-2.6 M-13.6,-15 l-.4,-3.2 M-13.6,-15 l1.4,-2.6 M-13.6,-15 l-2.8,-.8" fill="none" stroke="${INK}" stroke-width=".7" stroke-linecap="round"/>`;
+  g+=`<path d="M4.4,-6 Q8,-4 8.6,2 Q9,7 8,10" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M4.4,-6 Q8,-4 8.6,2 Q9,7 8,10" fill="none" stroke="${BARK}" stroke-width="1.5" stroke-linecap="round"/>`;
+  g+=`<path d="M8,10 l-1.4,2.6 M8,10 l.4,3 M8,10 l1.8,2.2" fill="none" stroke="${INK}" stroke-width=".7" stroke-linecap="round"/>`;
+  // the crown: branches forking upward, a little moss and leaf
+  g+=`<path d="M-1.6,-15.4 L-3,-19 L-5.6,-21.6 M-3,-19 L-2.2,-23 M0,-15.6 L.4,-20 L-.8,-24.4 M.4,-20 L2,-23.6 M1.8,-15.4 L3.6,-18.6 L6.4,-20.4 M3.6,-18.6 L4,-22.4 M-5.6,-21.6 l-1.6,-.4 M6.4,-20.4 l1.4,-1" fill="none" stroke="${INK}" stroke-width=".9" stroke-linecap="round"/>`;
+  g+=[[-5.8,-22,1.3,MOSS],[-.9,-24.8,1.2,MOSS2],[2.2,-24,1,MOSS],[6.8,-21,1.2,MOSS2],[4.2,-22.8,.9,MOSS]].map(([x,y,r,c])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="${INK}" stroke-width=".35"/>`).join("");
+  // the face: a heavy brow, deep amber eyes, a long nose of bark
+  g+=`<path d="M-4.2,-11.4 Q-2.2,-13.4 0,-11.8 Q2.2,-13.4 4.2,-11.4 L3.8,-10.4 Q2,-11.6 0,-10.6 Q-2,-11.6 -3.8,-10.4 Z" fill="${DARK}" stroke="${INK}" stroke-width=".5"/>`;
+  g+=`<circle cx="-2" cy="-9.6" r="2.2" fill="url(#lampglow)"/><circle cx="2" cy="-9.6" r="2.2" fill="url(#lampglow)"/><ellipse cx="-2" cy="-9.6" rx=".9" ry=".7" fill="#ffc35a"/><ellipse cx="2" cy="-9.6" rx=".9" ry=".7" fill="#ffc35a"/>`;
+  g+=`<path d="M0,-10.6 Q.6,-8 0,-6.4 Q-.8,-6 -.4,-5.6" fill="none" stroke="${INK}" stroke-width=".6" stroke-linecap="round"/><path d="M-1.8,-5 q1.8,.8 3.6,0" fill="none" stroke="${INK}" stroke-width=".5"/>`;
+  // a long beard of twigs and moss
+  g+=[[-3,-4.6,-4.4,4],[-1.8,-4.4,-2.4,7],[-.6,-4.4,-.8,9],[.6,-4.4,.8,9.4],[1.8,-4.4,2.6,7],[3,-4.6,4.2,4.4]].map(([x1,y1,x2,y2],i)=>`<path d="M${x1},${y1} Q${(x1+x2)/2+(i%2?.6:-.6)},${(y1+y2)/2} ${x2},${y2}" fill="none" stroke="${i%3?DARK:MOSS}" stroke-width=".55" stroke-linecap="round"/>`).join("");
+  if(hobbits){
+    // Merry and Pippin, riding on his shoulder
+    g+=`<path d="M3.2,-7.4 q1.4,-3 3,-.4 z" fill="#5f7a3e" stroke="${INK}" stroke-width=".35"/><circle cx="4.6" cy="-9.2" r="1.05" fill="#f1d8b4" stroke="${INK}" stroke-width=".35"/><path d="M3.8,-9.8 q.8,-.9 1.6,0" fill="none" stroke="#6b3e1c" stroke-width=".5"/>`;
+    g+=`<path d="M5.8,-6.4 q1.4,-3 3,-.4 z" fill="#8f5a2e" stroke="${INK}" stroke-width=".35"/><circle cx="7.2" cy="-8.2" r="1" fill="#f1d8b4" stroke="${INK}" stroke-width=".35"/><path d="M6.4,-8.8 q.8,-.9 1.6,0" fill="none" stroke="#c99a2e" stroke-width=".5"/>`;
+  }
+  return g+`</g>`;
+}
 // a steady pseudo-random number per paper, so each hobbit hole keeps its own look
 const vary=(p,n)=>(((p.id+1)*9301+n*49297)%233280)/233280;
 // what hides each paper until the lantern finds it
@@ -450,7 +479,7 @@ function landmarks(r){return by(r).map(p=>{const sc=scaleOf(p),s=sc.toFixed(2);
   return `<g class="lm r-${r}" data-id="${p.id}" tabindex="0" role="button" aria-label="Hidden paper in ${esc(REALMS[r].name)}" transform="translate(${f(p.px)},${f(p.py)})" style="--d:${(rnd()*3).toFixed(2)}s">
     <g class="back" transform="scale(${s})">${backdrop(r,p)}</g>
     <g class="pip"><circle class="aura" r="${f(24*sc)}" fill="url(#aura)"/><circle class="halo nodisc" r="${f(15*sc)}" fill="transparent" stroke="none"/>
-    <g class="ic"><g class="fl${fx}"><g transform="scale(${s})${r==="mountains"?` rotate(${(-45+vary(p,90)*90).toFixed(0)}) scale(${vary(p,91)>.5?-1:1},1)`:""}">${p.spot==="firework"?firework(p.fw):ICONS[p.spot==="argonath"?"crown":REALMS[r].icon]}</g></g></g></g>
+    <g class="ic"><g class="fl${fx}"><g transform="scale(${s})${r==="mountains"?` rotate(${(-45+vary(p,90)*90).toFixed(0)}) scale(${vary(p,91)>.5?-1:1},1)`:""}">${p.spot==="firework"?firework(p.fw):r==="orthanc"?entIcon(p.id===by("orthanc")[0].id):ICONS[p.spot==="argonath"?"crown":REALMS[r].icon]}</g></g></g></g>
     <g class="cover" transform="scale(${s})">${cover(r,p)}</g></g>`}).join("")}
 function rlabel(k){const R=REALMS[k];return `<g class="rlabel" data-realm="${k}" tabindex="0" role="button" aria-label="${esc(R.name)}, ${esc(R.sub)}">
   <text class="big" x="${R.lx}" y="${R.ly}" text-anchor="middle" font-family="Fondamento,serif" font-size="${k==='lorien'||k==='gondor'?36:32}" letter-spacing=".5" fill="${INK}">${esc(R.name)}</text>
