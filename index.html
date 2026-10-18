@@ -73,6 +73,7 @@ svg.filtering .lm.lit .halo.nodisc{stroke:var(--rubric);stroke-width:2;stroke-da
 .lm.found .burst{animation:burst 2.6s ease-in-out infinite;animation-delay:var(--d,0s)}
 @keyframes burst{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 .lm.found .tw{animation:pulse 1.2s ease-in-out infinite}
+.eyeglow{animation:pulse 2.6s ease-in-out infinite}
 .lm.r-rohan .pip{transform:translateY(26px) scaleY(.15);transform-origin:50% 100%}
 .lm.r-rohan.found .pip{transform:none;transition:opacity .4s ease .2s,transform 1.4s cubic-bezier(.3,1.2,.5,1) .2s}
 .spark{opacity:0}
@@ -161,7 +162,7 @@ svg.filtering .lm.lit .halo{stroke:var(--rubric);stroke-opacity:1;stroke-width:2
   font-family:var(--f-label);letter-spacing:.14em;font-size:14px;color:#a8916a;padding:8px 12px;border:1px solid #a8916a55;border-radius:2px}
 #skip:hover{color:var(--glow);border-color:var(--glow)}
 #skip:focus-visible{outline:2px solid var(--glow)}
-@media (prefers-reduced-motion:reduce){.lm .pip,.lm .cp{transition:none}.lm:not(.found) .cover,.lm .aura,.lm .fl,.lm .c-cloud,.lm .spark,.lm .lamp,.lm .rays,.lm .swirl,.lm .pulse,.lm .inscr,.lm .wave,.lm .sway,.lm .burst,.lm .tw{animation:none!important}#card{animation:none}.lm .ic,.st,#roadreveal,.cam svg,.line,#intro{transition:none}#ember{animation:none}}
+@media (prefers-reduced-motion:reduce){.lm .pip,.lm .cp{transition:none}.lm:not(.found) .cover,.lm .aura,.lm .fl,.lm .c-cloud,.lm .spark,.lm .lamp,.lm .rays,.lm .swirl,.lm .pulse,.lm .inscr,.eyeglow,.lm .wave,.lm .sway,.lm .burst,.lm .tw{animation:none!important}#card{animation:none}.lm .ic,.st,#roadreveal,.cam svg,.line,#intro{transition:none}#ember{animation:none}}
 </style>
 
 <div id="intro" role="dialog" aria-label="Opening">
@@ -194,7 +195,7 @@ const REALMS = {
     blurb:"His largest realm. Coordinate networks, positional encodings, activations and radiance fields: whole scenes of light, kept inside a network."},
   orthanc:{name:"Isengard",sub:"where the Ents came marching",lx:640,ly:892,yrs:"2023 – 2026",icon:"orb",
     blurb:"Vision meets language: hyperbolic embeddings, image retrieval and reading documents. The Ents have come for Isengard."},
-  rohan:{name:"Rohan",sub:"riders of the few-shot plains",lx:940,ly:664,yrs:"2021 – 2024",icon:"banner",
+  rohan:{name:"Rohan",sub:"riders of the few-shot plains",lx:940,ly:640,yrs:"2021 – 2024",icon:"banner",
     blurb:"Learning new classes from only a handful of examples, without forgetting the old ones. Raise the banners over the Golden Hall."},
   gondor:{name:"Gondor",sub:"the beacons of decentralised training",lx:1130,ly:982,yrs:"2025 – 2026",icon:"beacon",
     blurb:"Training large language models across GPUs scattered over the internet, each node passing the signal to the next, like the beacons."}
@@ -303,13 +304,13 @@ const scaleOf=p=>(1+Math.min(Math.sqrt(p.c),15)/45)*(p.spot==="argonath"||p.sp==
 BOOKS.forEach((p,k)=>{p.spot="book";p.px=[535,633][k%2];p.py=[226,210][k%2]});
 placeCluster(by("shire").slice(0,-3),248,480,104,88,.4);
 {const FW=[[186,428],[252,404],[318,430]];by("shire").slice(-3).forEach((p,k)=>{p.spot="firework";p.fw=k;p.px=FW[k][0];p.py=FW[k][1]})}
-placeLine(by("mountains"),[[712,150],[722,250],[700,360],[682,460],[655,560],[640,610]],[18,0]);
+placeLine(by("mountains"),[[712,150],[722,250],[700,360],[682,460],[668,536]],[18,0]);
 const ARGO=[[1118,648],[1232,652]],AS=1.8;
 by("eregion").forEach((p,k)=>{if(k<2){p.px=420+k*88;p.py=650+(k%2)*8}else{const [bx,by2]=ARGO[(k-2)%2];p.spot="argonath";p.px=bx-12*AS;p.py=by2-71*AS}});
 placeCluster(by("lorien"),940,385,150,100,.2);
 placeCluster(by("orthanc"),640,774,82,56,.7);
 placeCluster(by("rohan"),940,758,56,24,0);
-{const K=1.25,F=[[-22,-52,36],[0,-52,44],[22,-52,36]];by("rohan").forEach((p,k)=>{const s=scaleOf(p),[dx,roof,h]=F[k%3];
+{const K=1.1,F=[[-40,-84,22],[0,-94,26],[40,-84,22]];by("rohan").forEach((p,k)=>{const s=scaleOf(p),[dx,roof,h]=F[k%3];
   p.px=940+dx*K+8*s;p.py=820+roof*K-h*K+12*s;p.pole=h*K/s})}
 placeLine(by("gondor"),[[850,888],[990,868],[1130,888],[1270,858],[1405,876]],[0,10]);
 
@@ -486,17 +487,34 @@ function horse(x,y,s=1,dir=1,rider=false){
 }
 // Meduseld, the Golden Hall, on the green hill of Edoras
 function meduseld(cx,by){
+  const WOOD="#dcc69c",GOLD="#d6aa4c",STONE="#e6d8bb";
   let o=`<path d="M${cx-84},${by} Q${cx-52},${by-26} ${cx},${by-31} Q${cx+52},${by-26} ${cx+84},${by} Z" fill="${PAPER}" stroke="${INK}" stroke-width="1.3"/>`;
   for(let i=0;i<9;i++){const x=cx+18+i*7,y=by-26+i*2.9;o+=pen(`M${f(x)},${f(y)} l4,7`,.6,SOFT)}
-  for(let i=-66;i<=66;i+=4.4){const u=i/84,yy=by-31*(1-u*u)*.82+6;if(Math.abs(i)<9)continue;o+=pen(`M${f(cx+i)},${f(yy)} v-5.5`,.8)+pen(`M${f(cx+i-.8)},${f(yy-5.5)} l.8,-1.2 l.8,1.2`,.5)}
-  o+=pen(`M${cx-5},${by} l2,-6 l-2,-6 l3,-6 l-2,-6 M${cx+5},${by} l2,-6 l-2,-6 l3,-6 l-2,-6`,.7);
-  const hall=(x,y,w,h,roof)=>`<path d="M${x-w},${y} v${-h} h${w*2} v${h} z" fill="${PAPER}" stroke="${INK}" stroke-width="1"/>`
-    +`<path d="M${x-w-4},${y-h} L${x-w+3},${y-h-roof} H${x+w-3} L${x+w+4},${y-h} Z" fill="#d6aa4c" stroke="${INK}" stroke-width="1"/>`
-    +pen(`M${x-w+4},${y-h-roof*.5} H${x+w-4}`,.45)+[...Array(Math.round(w/3))].map((_,i)=>pen(`M${f(x-w+2+i*6)},${y-h} l2,${-roof}`,.4)).join("")
-    +pen(`M${x-w+3},${y-h-roof} l-3,-5 M${x-w+3},${y-h-roof} l3,-5 M${x+w-3},${y-h-roof} l-3,-5 M${x+w-3},${y-h-roof} l3,-5`,.8);
-  o+=hall(cx-50,by-14,11,7,6)+hall(cx+50,by-14,11,7,6);
-  o+=hall(cx,by-31,28,11,10)+pen([-22,-14,-6,6,14,22].map(x=>`M${cx+x},${by-31} v-11`).join(" "),.7)+`<path d="M${cx-4},${by-31} v-8 h8 v8 z" fill="${INK}"/>`;
-  o+=pen(`M${cx-12},${by-31} h24 M${cx-14},${by-29} h28`,.6);
+  for(let i=-66;i<=66;i+=4.4){const u=i/84,yy=by-31*(1-u*u)*.82+6;if(Math.abs(i)<12)continue;o+=pen(`M${f(cx+i)},${f(yy)} v-5.5`,.8)+pen(`M${f(cx+i-.8)},${f(yy-5.5)} l.8,-1.2 l.8,1.2`,.5)}
+  o+=pen(`M${cx-7},${by} l2,-8 l-2,-8 l3,-8 M${cx+7},${by} l2,-8 l-2,-8 l3,-8`,.7);
+  // the lesser halls to either side
+  const side=(x,y,w,h,r)=>`<path d="M${x-w},${y} v${-h} h${w*2} v${h} z" fill="${WOOD}" stroke="${INK}" stroke-width=".9"/><path d="M${x-w-3},${y-h} L${x},${y-h-r} L${x+w+3},${y-h} Z" fill="${GOLD}" stroke="${INK}" stroke-width=".9"/>`
+    +pen(`M${x},${y-h-r} l-3,-4 M${x},${y-h-r} l3,-4`,.8)+`<path d="M${x-3},${y} v-5 a3,3 0 0 1 6,0 v5 z" fill="${INK}"/>`;
+  o+=side(cx-58,by-16,11,9,9)+side(cx+58,by-16,11,9,9);
+  const hb=by-31;
+  // stone terrace and steps
+  o+=`<path d="M${cx-46},${hb} h92 v-6 h-92 z" fill="${STONE}" stroke="${INK}" stroke-width=".9"/>`+pen(`M${cx-40},${hb-3} h80 M${cx-30},${hb} v-6 M${cx-10},${hb} v-6 M${cx+10},${hb} v-6 M${cx+30},${hb} v-6`,.4,SOFT);
+  // the front wall with its three arches
+  o+=`<path d="M${cx-30},${hb-6} V${hb-26} H${cx+30} V${hb-6} Z" fill="${WOOD}" stroke="${INK}" stroke-width=".9"/>`;
+  for(let i=-24;i<=24;i+=4)o+=pen(`M${cx+i},${hb-6} v-20`,.3,"#9a7a4a");
+  [-17,0,17].forEach(dx=>{o+=`<path d="M${cx+dx-6},${hb-6} v-8 a6,6 0 0 1 12,0 v8 z" fill="#2a1c10"/>`+pen(`M${cx+dx-7},${hb-6} v-8 a7,7 0 0 1 14,0 v8`,.6,GOLD)});
+  // a carved frieze, the great gable and its golden sunburst
+  o+=`<path d="M${cx-32},${hb-26} h64 v-4 h-64 z" fill="#b89a62" stroke="${INK}" stroke-width=".6"/>`+pen(`M${cx-30},${hb-28} `+[...Array(15)].map((_,i)=>`l2,${i%2?2:-2} l2,${i%2?-2:2}`).join(" "),.4,"#4a3a20");
+  o+=`<path d="M${cx-37},${hb-30} L${cx},${hb-57} L${cx+37},${hb-30} Z" fill="${WOOD}" stroke="${INK}" stroke-width="1"/>`;
+  for(let i=-30;i<=30;i+=4)o+=pen(`M${cx+i},${hb-30} V${f(hb-57+Math.abs(i)*27/37)}`,.3,"#9a7a4a");
+  o+=[...Array(16)].map((_,i)=>{const a=i/16*Math.PI*2,r=i%2?5:8.5;return pen(`M${f(cx+Math.cos(a)*2)},${f(hb-42+Math.sin(a)*2)} L${f(cx+Math.cos(a)*r)},${f(hb-42+Math.sin(a)*r)}`,.7,GOLD)}).join("")+`<circle cx="${cx}" cy="${hb-42}" r="2.2" fill="${GOLD}" stroke="${INK}" stroke-width=".4"/>`;
+  // bargeboards crossing at the peak into carved horse heads
+  o+=pen(`M${cx-39},${hb-29} L${cx+7},${hb-63} M${cx+39},${hb-29} L${cx-7},${hb-63}`,2.4)+pen(`M${cx-39},${hb-29} L${cx+7},${hb-63} M${cx+39},${hb-29} L${cx-7},${hb-63}`,.8,GOLD);
+  const head=(x,y,d)=>`<path d="M${x},${y} q${d*3},-4 ${d*7},-3 l${d*1},2 l${-d*3},.6 q${-d*2},1 ${-d*3},3 z" fill="${INK}"/>`;
+  o+=head(cx+7,hb-63,1)+head(cx-7,hb-63,-1);
+  // the tall carved pillars, crowned with horse heads
+  [-40,40].forEach(dx=>{o+=`<path d="M${cx+dx-2.6},${hb-6} V${hb-47} H${cx+dx+2.6} V${hb-6} Z" fill="#b89a62" stroke="${INK}" stroke-width=".8"/>`
+    +pen(`M${cx+dx},${hb-8} `+[...Array(9)].map((_,i)=>`l${i%2?-1.6:1.6},-4`).join(" "),.45,"#4a3a20")+head(cx+dx,hb-47,dx>0?1:-1)});
   return o;
 }
 // what stands behind a paper: the hill of the hobbit hole, the forge, the pyre, the flagpole
@@ -509,22 +527,28 @@ function backdrop(r,p){
     +pen("M-4,3 h8 M-2.4,5 l-1,3 M2.4,5 l1,3",.5);
   if(r==="shire"){const W=26+v(2)*8,H=18+v(3)*8;
     let o=`<path d="M${f(-W)},13 Q${f(-W*.9)},${f(-H*.8)} ${f(-W*.1)},${f(-H)} Q${f(W*.85)},${f(-H*.75)} ${f(W)},13 Z" fill="${PAPER}" stroke="${INK}" stroke-width="1.2"/>`;
+    o+=`<path d="M-22,13 V2 Q-21,-14 0,-17 Q21,-14 22,2 V13 Z" fill="#ecd48c" stroke="${INK}" stroke-width=".7"/>`+pen("M-22,5 h3 M19,5 h3 M-20,-4 l2,1 M18,-4 l2,1",.4,"#b89a52");
     o+=pen(`M${f(W*.5)},${f(-H*.5)} l4,7 M${f(W*.65)},${f(-H*.3)} l4,7 M${f(W*.78)},${f(-H*.05)} l3,6`,.6,SOFT)
       +pen(`M${f(-W*.6)},${f(-H*.6)} q3,-2 6,0 M${f(-W*.2)},${f(-H*.92)} q3,-2 6,0 M${f(W*.25)},${f(-H*.85)} q3,-2 6,0`,.7,"#6d8a3a");
     const nw=1+Math.floor(v(4)*2);
     for(let i=0;i<nw;i++)for(const s of[-1,1]){const wx=s*(17.5+i*6.2),wy=3-i*2.4;
-      o+=`<circle cx="${f(wx)}" cy="${f(wy)}" r="2.6" fill="#f6dc8e" stroke="${INK}" stroke-width=".8"/>`+pen(`M${f(wx-2.6)},${f(wy)} h5.2 M${f(wx)},${f(wy-2.6)} v5.2`,.4);
+      o+=`<circle cx="${f(wx)}" cy="${f(wy)}" r="3.8" fill="none" stroke="#9a4a2a" stroke-width="1.6" stroke-dasharray="1.6 .7"/><circle cx="${f(wx)}" cy="${f(wy)}" r="2.6" fill="#f6dc8e" stroke="${INK}" stroke-width=".8"/>`+pen(`M${f(wx-2.6)},${f(wy)} h5.2 M${f(wx)},${f(wy-2.6)} v5.2`,.4);
       if(v(5+i+(s>0?3:0))>.45)o+=`<rect x="${f(wx-3.2)}" y="${f(wy+2.7)}" width="6.4" height="1.7" fill="#8a5a2e" stroke="${INK}" stroke-width=".4"/>`
         +[[-2,"#c0392b"],[0,"#e2b84a"],[2,"#e07a9a"]].map(([d,c])=>`<circle cx="${f(wx+d)}" cy="${f(wy+2.4)}" r=".85" fill="${c}" stroke="${INK}" stroke-width=".25"/>`).join("")}
     const nc=1+Math.floor(v(8)*2);
     for(let i=0;i<nc;i++){const cx=(i?-1:1)*(6+v(9+i)*9),cy=-H*.92+Math.abs(cx)*.22;
       o+=`<path d="M${f(cx-1.8)},${f(cy+2)} v-7 h3.6 v7 z" fill="#c4ad8c" stroke="${INK}" stroke-width=".7"/>`+pen(`M${f(cx-1.8)},${f(cy-1.5)} h3.6 M${f(cx)},${f(cy+2)} v-3.5`,.35)
         +pen(`M${f(cx-2.4)},${f(cy-5)} h4.8`,1)+pen(`M${f(cx)},${f(cy-7)} q-3,-3 0,-6 q3,-3 0,-6 q-2,-2 0,-4`,.5,SOFT)}
-    o+=`<circle r="12.2" fill="${INK}"/>`;
+    o+=`<circle r="14.6" fill="none" stroke="${INK}" stroke-width=".6"/><circle r="13.6" fill="none" stroke="#9a4a2a" stroke-width="2.6" stroke-dasharray="2.4 .8"/><circle r="12.2" fill="${INK}"/>`;
+    o+=`<path d="M-20,-9 Q0,-25 20,-9" fill="none" stroke="#6b4a2a" stroke-width="2.2"/><path d="M-20,-9 Q0,-25 20,-9" fill="none" stroke="#a07848" stroke-width=".8"/>`+pen("M-17,-11 l2,4 M17,-11 l-2,4 M-8,-17 v3 M8,-17 v3",.7,"#6b4a2a");
+    o+=pen("M13.5,-14 v3.4",.5)+`<path d="M12,-10.6 h3 l-.4,3.2 h-2.2 z" fill="#ffd27a" stroke="${INK}" stroke-width=".4"/><circle cx="13.5" cy="-9" r="2.6" fill="url(#lampglow)"/>`;
     o+=[[0,15.5,2.4],[1.6,18.6,2.1],[-.8,21.6,1.9]].map(([x,y,r])=>`<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r*.55}" fill="${PAPER}" stroke="${INK}" stroke-width=".5"/>`).join("");
     const COLS=["#c0392b","#e2b84a","#f4f0e0","#8e5aa8","#e07a9a","#e8833a"],nf=7+Math.floor(v(12)*7);
     for(let i=0;i<nf;i++){const fx=-W+3+v(20+i)*(W*2-6);if(Math.abs(fx)<6)continue;const fy=13+v(40+i)*2.6,c=COLS[Math.floor(v(60+i)*COLS.length)];
       o+=pen(`M${f(fx)},${f(fy)} v-3.4 M${f(fx)},${f(fy-1.6)} l1.2,-.8`,.5,"#5f7a3e")+`<circle cx="${f(fx)}" cy="${f(fy-3.8)}" r="1.2" fill="${c}" stroke="${INK}" stroke-width=".3"/><circle cx="${f(fx)}" cy="${f(fy-3.8)}" r=".4" fill="#e2b84a"/>`}
+    if(v(80)>.55){const s=v(81)>.5?1:-1,bx=s*(W+2);
+      o+=`<g transform="translate(${f(bx)},11) scale(${s},1)"><path d="M-7,-2 h12 l-2,4 h-9 z" fill="#a07848" stroke="${INK}" stroke-width=".6"/>${pen("M5,-2 l5,-3 M-6,2 l-2,3",.7,"#6b4a2a")}<circle cx="-8.4" cy="5.2" r="2" fill="${PAPER}" stroke="${INK}" stroke-width=".6"/>`
+        +`<ellipse cx="0" cy="-5" rx="5" ry="3.8" fill="#e08a2e" stroke="${INK}" stroke-width=".6"/>${pen("M-2,-8.4 q-1,3.4 0,6.8 M2,-8.4 q1,3.4 0,6.8",.4,"#a85a14")}${pen("M0,-8.8 v-1.6",.8,"#5f7a3e")}</g>`}
     if(v(70)>.5){const s=v(71)>.5?1:-1;o+=pen(`M${s*21},16 h${s*12} M${s*21},13.4 h${s*12} M${s*21.5},17.4 v-6 M${s*25.5},17.4 v-6 M${s*29.5},17.4 v-6`,.7)}
     else{const s=v(72)>.5?1:-1;o+=`<path d="M${s*22},14.6 h${s*7}" stroke="#8a5a2e" stroke-width="1.6"/>`+pen(`M${s*22.6},14.6 v2.6 M${s*28.4},14.6 v2.6`,.7)}
     if(v(73)>.6){const s=v(74)>.5?1:-1;o+=pen(`M${s*14},14 v-6`,.8)+`<rect x="${s*14-2.2}" y="5.6" width="4.4" height="3" rx="1.2" fill="#8f2b1b" stroke="${INK}" stroke-width=".5"/>`}
@@ -554,7 +578,7 @@ function rlabel(k){const R=REALMS[k];return `<g class="rlabel" data-realm="${k}"
 const small=(x,y,t,sz=16,rot=0)=>`<text x="${x}" y="${y}" text-anchor="middle" transform="rotate(${rot} ${x} ${y})" font-family="Fondamento,serif" font-style="italic" font-size="${sz}" fill="${SOFT}">${t}</text>`;
 const milestone=(x,y,t)=>`<g transform="translate(${x},${y})"><circle r="16" fill="${PAPER}" stroke="${RUB}" stroke-width="1.3"/><circle r="13" fill="none" stroke="${RUB}" stroke-width=".5"/><text text-anchor="middle" y="4.5" font-family="Fondamento,serif" font-size="12" fill="${RUB}">${t}</text></g>`;
 
-const ROAD=[[338,592],[420,430],[560,370],[600,470],[520,600],[610,560],[672,520],[760,470],[850,450],[820,560],[740,660],[650,715],[790,775],[930,838],[1040,848],[1200,842],[1452,860]];
+const ROAD=[[338,592],[420,430],[560,370],[600,470],[520,600],[610,560],[672,520],[760,470],[850,450],[820,560],[740,660],[650,715],[790,775],[930,838],[1040,848],[1200,842],[1470,898]];
 
 // aged paper, painted once to a small canvas so the map stays light to animate
 function paperTexture(){
@@ -637,12 +661,12 @@ function extras(){
   o+=lonelyMountain(1450,176)+big(1545,200,"The Lonely",14)+big(1545,221,"Mountain",14)+small(1530,240,"where the GPU hoard lies",13);
   o+=dragonX(1540,84,1.1)+lake(1385,262,30,13)+small(1385,291,"Long Lake",13);
   // between the river and Mordor
-  o+=river([[860,626],[930,630],[1020,634],[1100,638],[1176,644]],1.1)+small(1062,628,"Entwash",12);
+  o+=river([[860,600],[930,604],[1020,608],[1100,612],[1172,618]],1.1)+small(1062,602,"Entwash",12);
   o+=pen("M1184,692 v10 M1189,692 v12 M1194,693 v10",.8)+small(1150,707,"Rauros",12);
   o+=argonath(1118,648)+argonath(1232,652)+small(1176,684,"the Argonath",15);
   o+=marsh(1300,708,48,16)+small(1300,742,"the Deadline Marshes",13);
   o+=forest(1405,700,42,14,9,13,2)+small(1405,728,"Ithilien",13);
-  o+=baradDur(1505,504);
+  o+=baradDur(1510,528);
   o+=marsh(1030,545,42,13)+small(1030,575,"Gladden Fields",13);
   o+=sand(1180,390,1285,470,50)+small(1240,402,"the Brown Lands",13);
   o+=runeText(1246,442,"sameera",16,RUB,"middle",'fill-opacity=".6"')+runeText(1240,462,WORDS(P.length).replace("-"," ")+" papers",12,RUB,"middle",'fill-opacity=".5"');
@@ -787,14 +811,20 @@ function dragonX(x,y,sc=1){
 }
 // Minas Tirith: seven walled tiers on the knee of the mountain
 function minasTirith(x,y){
-  let o=peak(x+30,y-8,44),g="";
-  for(let i=6;i>=0;i--){const w=46-i*6,y0=-i*7;g+=fillP(`M${-w},${y0} L${-w+1},${y0-8} H${w-1} L${w},${y0} Z`,1);
-    for(let j=-w+3;j<w-3;j+=5)g+=pen(`M${j},${y0-8} v-2 h2.4 v2`,.55);
-    for(let j=-w+6;j<w-4;j+=9)g+=`<rect x="${j}" y="${y0-5}" width="1.2" height="2" fill="${INK}"/>`;
-    g+=pen(`M${w-6},${y0-1} l3,-5 M${w-10},${y0-1} l3,-5`,.5,SOFT)}
-  g+=solid("M-3,-2 L0,-52 L3,-2 Z",INK,.8);
-  g+=fillP("M-3.5,-50 V-80 H3.5 V-50 Z",1)+solid("M-3.5,-80 L0,-92 L3.5,-80 Z")+pen("M0,-92 v-7",1)+solid("M0,-99 l10,2.5 l-10,2.5 z",RUB);
-  g+=solid("M-5,0 v-5 a5,5 0 0 1 10,0 v5 z");
+  const STONE="#ece6d6",SHADE="#bdb5a4";
+  let o=peak(x+30,y-8,82),g="";
+  for(let i=6;i>=0;i--){const w=62-i*7.6,y0=-i*13,h=12;
+    g+=`<path d="M${-w},${y0} L${-w+1.4},${y0-h} H${w-1.4} L${w},${y0} Z" fill="${STONE}" stroke="${INK}" stroke-width=".9"/>`;
+    for(let j=-w+3;j<w-3;j+=4.6)g+=pen(`M${f(j)},${y0-h} v-1.8 h2.2 v1.8`,.5);
+    for(let j=-w+4;j<w-4;j+=7)g+=`<rect x="${f(j)}" y="${y0-7}" width="1.1" height="2.4" fill="${INK}"/>`;
+    let k=0;for(let j=-w+4;j<w-6;j+=6.4,k++){const bh=3+((k*7+i*3)%5);g+=`<path d="M${f(j)},${y0-h} v${-bh} h4.6 v${bh}" fill="${STONE}" stroke="${INK}" stroke-width=".45"/><rect x="${f(j+1.8)}" y="${f(y0-h-bh+1.2)}" width="1" height="1.6" fill="${INK}"/>`}
+    g+=`<path d="M${w-12},${y0} L${w-10.6},${y0-h} H${w-1.4} L${w},${y0} Z" fill="${SHADE}" opacity=".55"/>`}
+  // the great prow of rock, splitting the city to the top
+  g+=`<path d="M-7,2 L-1,-93 L9,-66 L12,2 Z" fill="#f2eee2" stroke="${INK}" stroke-width=".9"/><path d="M-1,-93 L9,-66 L12,2 L3,2 Z" fill="${SHADE}" stroke="none"/>`+pen("M1,-70 l2,10 M4,-40 l1.6,12 M6,-14 l1,10",.5,SOFT);
+  // the citadel and the white tower
+  g+=`<path d="M-12,-91 v-7 h24 v7 z" fill="${STONE}" stroke="${INK}" stroke-width=".8"/>`+`<path d="M-3.6,-98 V-132 L0,-152 L3.6,-132 V-98 Z" fill="#faf7ee" stroke="${INK}" stroke-width=".8"/>`;
+  g+=pen("M-3.6,-118 h7.2 M-3.6,-104 h7.2",.5)+`<rect x="-.6" y="-126" width="1.2" height="3" fill="${INK}"/>`;
+  g+=`<path d="M-7,0 v-7 a7,7 0 0 1 14,0 v7 z" fill="${INK}"/>`;
   return o+G(x,y,g);
 }
 // Isengard: the ring wall and the black tower of Orthanc
@@ -819,25 +849,47 @@ function isengard(cx,cy){
   [[-44,-20],[56,0],[-62,10],[24,30],[-6,-40],[40,-34],[-30,42]].forEach(([a,b])=>o+=stump(cx+a,cy+b,.9));
   o+=orc(cx-46,cy-14,1)+orc(cx+44,cy+22,-1)+orc(cx-12,cy+44,1)+orc(cx+20,cy-38,-1)+orc(cx-64,cy+4,1);
   for(let i=0;i<16;i++){const x=cx+70+rnd()*110,y=cy-120+rnd()*80;o+=i%4===0?log(x,y,J(60),10+rnd()*6):stump(x,y,.8+rnd()*.4)}
-  o+=G(cx,cy-44,solid("M-11,0 L-8,-56 L-13,-64 L-7,-61 L-5,-72 L-2,-62 L0,-74 L2,-62 L5,-72 L7,-61 L13,-64 L8,-56 L11,0 Z")
-    +pen("M-4,-2 L-3,-54 M3,-2 L3,-54 M-7,-30 h14",.6,PAPER)+`<circle cx="0" cy="-42" r="1.4" fill="${RUB}"/>`);
+  // the Ents have broken the dam: water runs in across the works
+  o+=river([[cx+64,cy-118],[cx+56,cy-90],[cx+44,cy-64],[cx+30,cy-40]],1)+river([[cx-34,cy-122],[cx-30,cy-92],[cx-36,cy-66],[cx-26,cy-42]],1)
+    +lake(cx+82,cy-70,14,6)+lake(cx-60,cy-60,11,5)+pen(`M${cx+20},${cy-30} q8,3 16,0 M${cx-30},${cy-28} q8,3 16,0`,.6,SOFT);
+  o+=orthancTower(cx,cy-30);
   return o;
+}
+// Orthanc: many-sided black stone, rising sheer to four great horns, mist wrapped about it
+function orthancTower(x,y){
+  const H=78;let g=solid(`M-13,0 L-11.4,${-H} L11.4,${-H} L13,0 Z`);
+  g+=pen(`M-7.4,-2 L-6.6,${-H+2} M-2.4,-2 L-2.2,${-H+2} M2.4,-2 L2.2,${-H+2} M7.4,-2 L6.6,${-H+2}`,.45,"#7a7480");
+  g+=pen(`M-12.6,${-H*.3} H12.6 M-12,${-H*.62} H12 M-11.6,${-H*.86} H11.6`,.5,"#7a7480");
+  g+=[[-4.6,-H*.4],[4.4,-H*.55],[-.2,-H*.72],[-4.4,-H*.9]].map(([a,b])=>`<rect x="${f(a-.6)}" y="${f(b)}" width="1.2" height="2.4" fill="${RUB}"/>`).join("");
+  g+=solid(`M-12.6,${-H} h25.2 v-3.4 h-25.2 z`);
+  g+=solid(`M-12.4,${-H-3} Q-17,${-H-18} -13.4,${-H-36} Q-10.6,${-H-18} -7.2,${-H-3} Z`)+solid(`M12.4,${-H-3} Q17,${-H-18} 13.4,${-H-36} Q10.6,${-H-18} 7.2,${-H-3} Z`);
+  g+=solid(`M-6.4,${-H-3} Q-7.6,${-H-14} -4.4,${-H-26} Q-2.4,${-H-13} -1.6,${-H-3} Z`)+solid(`M6.4,${-H-3} Q7.6,${-H-14} 4.4,${-H-26} Q2.4,${-H-13} 1.6,${-H-3} Z`);
+  g+=[[-17,-H*.46,5],[15,-H*.5,6],[-12,-H*.74,4],[20,-H*.24,5],[-20,-H*.2,4]].map(([a,b,r])=>`<circle cx="${a}" cy="${f(b)}" r="${r}" fill="${PAPER}" fill-opacity=".85" stroke="${SOFT}" stroke-width=".5"/>`).join("");
+  return G(x,y,g);
 }
 // Barad-dûr, buttressed and spiked, with the red eye at the top
 function baradDur(x,y){
-  let g=solid("M-24,0 L-17,-18 L-22,-20 L-14,-40 L-18,-42 L-10,-70 L-14,-72 L-7,-92 L-10,-96 L-4,-98 L-7,-110 L0,-101 L7,-110 L4,-98 L10,-96 L7,-92 L14,-72 L10,-70 L18,-42 L14,-40 L22,-20 L17,-18 L24,0 Z");
-  g+=pen("M-6,-4 L-4,-90 M5,-4 L3,-90 M-14,-30 h28 M-10,-60 h20",.5,PAPER);
-  g+=`<ellipse cx="0" cy="-104" rx="6.5" ry="3.2" fill="${RUB}"/>`+pen("M0,-106.6 v5.2",1.3);
-  for(let i=0;i<9;i++){const a=-Math.PI+i/8*Math.PI;g+=pen(`M${f(Math.cos(a)*9)},${f(-104+Math.sin(a)*6)} L${f(Math.cos(a)*16)},${f(-104+Math.sin(a)*11)}`,.5,RUB)}
+  let g=solid("M-48,0 L-42,-14 L-32,-22 L-36,-34 L-22,-40 L-15,-56 L-6,-50 L6,-60 L18,-48 L27,-38 L40,-30 L48,0 Z");
+  g+=pen("M-40,-8 l10,-10 M-28,-18 l8,-12 M-12,-30 l6,-14 M10,-34 l8,-10 M26,-22 l10,-6 M-20,-6 l6,-8 M14,-10 l8,-8",.5,"#8a8fa0");
+  g+=solid("M-34,-22 L-32,-54 L-29,-48 L-27,-66 L-24,-40 Z")+solid("M24,-38 L27,-62 L30,-54 L32,-74 L34,-34 Z");
+  g+=[[-30,-8],[-22,-14],[-12,-20],[2,-24],[12,-18],[22,-12],[30,-6],[-4,-10],[8,-34],[-18,-30]].map(([a,b])=>`<rect x="${a}" y="${b}" width="1.4" height="2.2" fill="#ff7a2a"/>`).join("");
+  g+=solid("M-12,-56 L-10,-90 L-13.4,-94 L-9,-120 L-11.6,-124 L-7,-148 L7,-148 L11.6,-124 L9,-120 L13.4,-94 L10,-90 L12,-56 Z");
+  g+=pen("M-4,-58 L-3,-146 M4,-58 L3,-146 M-12,-92 h24 M-10.4,-122 h20.8",.45,"#8a8fa0");
+  g+=[[-6,-80],[5,-104],[-3,-132],[4,-70]].map(([a,b])=>`<rect x="${a}" y="${b}" width="1.2" height="2.4" fill="#ff7a2a"/>`).join("");
+  g+=solid("M-7,-148 Q-15,-162 -6,-180 Q-8,-162 -2,-150 Z")+solid("M7,-148 Q15,-162 6,-180 Q8,-162 2,-150 Z");
+  g+=`<g class="eyeglow"><circle cx="0" cy="-162" r="14" fill="url(#forgeglow)"/><ellipse cx="0" cy="-162" rx="4.4" ry="7.4" fill="#ff8a2a"/><ellipse cx="0" cy="-162" rx="2.6" ry="5" fill="#ffd27a"/></g><path d="M0,-168 v12" stroke="${INK}" stroke-width="1.4"/>`;
   return G(x,y,g);
 }
 // Mount Doom: lava down its sides and smoke rolling off to the east
 function mountDoom(x,y){
-  let g=fillP("M-50,0 Q-27,-30 -12,-58 L12,-58 Q27,-30 52,0 Z",1.5)+solid("M12,-58 Q27,-30 52,0 L22,0 L28,-18 L16,-30 L22,-44 L10,-50 Z",INK,.85);
-  for(let i=0;i<6;i++){const u=.2+i*.13;g+=pen(`M${f(-12-38*u+3)},${f(-58+58*u)} l7,5`,.55,SOFT)}
-  g+=`<ellipse cx="0" cy="-58" rx="12" ry="3" fill="${RUB}" stroke="${INK}" stroke-width="1"/>`;
-  g+=pen("M-4,-56 q-7,14 -2,24 q4,10 -7,30 M5,-56 q3,12 -1,22 q-2,8 3,18",1.6,RUB);
-  let smoke="";for(let i=4;i>=0;i--){const cx=4+i*7+J(3),cy=-68-i*12,r=6+i*2.2;smoke+=`<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="${PAPER}" stroke="${INK}" stroke-width=".8"/>`+pen(`M${f(cx-r*.5)},${f(cy+r*.2)} q${f(r*.5)},${f(-r*.5)} ${f(r)},0`,.5,SOFT)}
+  let g=fillP("M-64,0 Q-38,-40 -14,-86 L14,-86 Q38,-40 66,0 Z",1.5)+solid("M14,-86 Q38,-40 66,0 L30,0 L38,-20 L24,-34 L32,-50 L18,-62 L22,-76 Z",INK,.85);
+  for(let i=0;i<8;i++){const u=.15+i*.1;g+=pen(`M${f(-14-50*u+3)},${f(-86+86*u)} l8,6`,.55,SOFT)}
+  g+=`<ellipse cx="0" cy="-86" rx="14" ry="3.4" fill="${RUB}" stroke="${INK}" stroke-width="1"/>`;
+  g+=pen("M-6,-84 q-8,16 -2,28 q5,12 -9,34 q-4,8 -2,18 M6,-84 q4,14 -1,26 q-3,10 4,22 M-14,-70 q-6,10 -12,16",1.7,RUB)+pen("M-6,-84 q-8,16 -2,28 q5,12 -9,34 M6,-84 q4,14 -1,26",.6,"#ffb347");
+  g+=`<g class="eyeglow"><path d="M-11,-86 Q-18,-106 -7,-120 Q-7,-106 0,-104 Q2,-122 11,-134 Q9,-114 15,-104 Q20,-95 12,-86 Z" fill="#e8601e" stroke="#8f2b1b" stroke-width=".7"/>`
+    +`<path d="M-5,-87 Q-9,-100 -2,-110 Q0,-100 4,-98 Q6,-108 9,-112 Q10,-98 6,-88 Z" fill="#ffb347"/></g>`;
+  let smoke="";[[16,-140,9],[30,-150,11],[46,-156,10],[6,-150,7],[24,-164,8],[58,-150,8]].forEach(([a,b,r])=>{smoke+=`<circle cx="${a}" cy="${b}" r="${r}" fill="${PAPER}" stroke="${INK}" stroke-width=".7"/>`+pen(`M${a-r*.5},${b+r*.2} q${r*.5},${-r*.5} ${r},0`,.5,SOFT)});
+  smoke+=`<ellipse cx="34" cy="-150" rx="34" ry="12" fill="${INK}" fill-opacity=".14"/>`;
   return G(x,y,smoke+g);
 }
 // Rivendell: the hidden valley, the falls and the Last Homely House
@@ -929,7 +981,7 @@ const mumakX=(x,y)=>G(x,y,pen("M-30,-4 q-8,4 -6,12",1)
   +pen("M-12,-43 l-2,-12 M-6,-43 v-13 M0,-43 l2,-12 M4,-46 v-14",.7)+solid("M4,-60 l9,2.5 l-9,2.5 z",RUB)+solid("M-9,-36 h4 v5 h-4 z"));
 
 function buildMap(){
-  const RIDGE=[[700,100],[735,210],[712,330],[690,450],[660,560],[630,650]];
+  const RIDGE=[[700,100],[735,210],[712,330],[690,450],[668,546]];
   const WHITE=[[830,936],[980,916],[1120,936],[1260,906],[1400,926]];
   const deco={
     shire:hills(240,470,150,105,24)+grass(240,520,140,40,14),
@@ -938,8 +990,8 @@ function buildMap(){
     eregion:forest(490,612,110,22,10,10,2),
     lorien:goldWood(940,420,185,100,72),
     orthanc:G(640,772,isengard(0,0),1.3)+forest(800,615,64,34,16,11,2,"pine")+ent(866,612)+small(800,668,"Fangorn",15),
-    rohan:G(940,820,meduseld(0,0),1.25)+hills(822,814,26,8,4)+hills(1062,814,26,8,4)+grass(940,828,190,8,12)+small(940,814,"Edoras",15)+horse(818,770,1,1,true)+horse(1058,760,.9,-1,false)+horse(1082,766,.8,-1,false)+horse(856,826,1,1,true)+horse(1026,824,.9,-1,false)+horse(1112,792,1,-1,true),
-    gondor:range(WHITE,26,15)+minasTirith(1488,868)+small(1496,898,"Minas Tirith",15)
+    rohan:G(940,820,meduseld(0,0),1.1)+hills(822,814,26,8,4)+hills(1062,814,26,8,4)+grass(940,828,190,8,12)+small(940,814,"Edoras",15)+horse(818,770,1,1,true)+horse(1058,760,.9,-1,false)+horse(1082,766,.8,-1,false)+horse(856,826,1,1,true)+horse(1026,824,.9,-1,false)+horse(1112,792,1,-1,true),
+    gondor:range(WHITE,26,15)+minasTirith(1488,902)+small(1468,926,"Minas Tirith",15)
   };
   const coast=wobble([[-40,-110],[92,-110],[92,0],[80,90],[104,180],[78,270],[112,360],[86,430],[118,500],[96,590],[70,680],[104,770],[82,860],[110,1040],[-40,1040]],6);
   const coastLine=smooth(coast.slice(2,14));
@@ -973,7 +1025,7 @@ function buildMap(){
   s+=`<path d="${river}" fill="none" stroke="${INK}" stroke-width="12" stroke-linecap="round"/><path d="${river}" fill="none" stroke="${PAPER}" stroke-width="9.4" stroke-linecap="round"/><path d="${river}" fill="none" stroke="${SOFT}" stroke-width=".7" stroke-dasharray="5 11"/>`;
   s+=range([[1310,330],[1530,330]],12,15)+range([[1320,650],[1540,655]],12,14)+range([[1300,360],[1290,630]],8,15)+range([[1555,350],[1560,640]],7,14);
   for(let i=0;i<70;i++){const x=1340+rnd()*190,y=420+rnd()*190;s+=pen(`M${f(x)},${f(y)} l${f(6+rnd()*6)},${f(-2+J(2))}`,.6,SOFT)}
-  s+=mountDoom(1430,538);
+  s+=mountDoom(1412,566);
   s+=`<text x="1388" y="398" text-anchor="middle" font-family="Fondamento,serif" font-size="38" letter-spacing="1" fill="${INK}">Mordor</text>`+small(1430,585,"where Reviewer 2 dwells",16);
   s+=small(28,520,"The Great Sea",20,-90)+small(1150,470,"Anduin",16,72);
   s+=extras()+fillers();
@@ -992,7 +1044,7 @@ function buildMap(){
   for(const [k] of ORDER){
     s+=`<g class="st" data-st="${k}">${deco[k]}${rlabel(k)}`;
     if(MS[k])s+=milestone(...MS[k]);
-    if(k==="gondor")s+=milestone(1440,920,"2026");
+    if(k==="gondor")s+=milestone(1400,936,"2026");
     s+=landmarks(k)+`</g>`;
   }
 
