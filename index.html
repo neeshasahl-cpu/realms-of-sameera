@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>body{margin:0}[hidden]{display:none!important}</style></head><body>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache"><style>body{margin:0}[hidden]{display:none!important}</style></head><body>
 <title>The Realms of Sameera</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -305,8 +305,8 @@ BOOKS.forEach((p,k)=>{p.spot="book";p.px=[535,633][k%2];p.py=[226,210][k%2]});
 placeCluster(by("shire").slice(0,-3),248,480,104,88,.4);
 {const FW=[[186,428],[252,404],[318,430]];by("shire").slice(-3).forEach((p,k)=>{p.spot="firework";p.fw=k;p.px=FW[k][0];p.py=FW[k][1]})}
 placeLine(by("mountains"),[[712,150],[722,250],[700,360],[682,460],[668,536]],[18,0]);
-const ARGO=[[1118,648],[1232,652]],AS=1.8;
-by("eregion").forEach((p,k)=>{if(k<2){p.px=420+k*88;p.py=650+(k%2)*8}else{const [bx,by2]=ARGO[(k-2)%2];p.spot="argonath";p.px=bx-12*AS;p.py=by2-71*AS}});
+const ARGO=[[1124,650],[1226,654]],AS=1.6;
+by("eregion").forEach((p,k)=>{if(k<2){p.px=420+k*88;p.py=650+(k%2)*8}else{const [bx,by2]=ARGO[(k-2)%2];p.spot="argonath";p.px=bx+13.6*AS;p.py=by2-93*AS}});
 placeCluster(by("lorien"),940,385,150,100,.2);
 placeCluster(by("orthanc"),640,774,82,56,.7);
 placeCluster(by("rohan"),940,758,56,24,0);
@@ -315,15 +315,30 @@ placeCluster(by("rohan"),940,758,56,24,0);
 placeLine(by("gondor"),[[850,888],[990,868],[1130,888],[1270,858],[1405,876]],[0,10]);
 
 // one of the Argonath: a stone king in mail and helm, axe at his side, left hand raised in warning
-function argonath(x,y){
-  let g=fillP("M-11,0 v-9 h22 v9 z",1.1,"#d8c7a6")+pen("M-11,-4.5 h22 M-5,0 v-4.5 M4,-9 v4.5",.5,SOFT);
-  g+=fillP("M-9,-9 L-6.5,-47 Q0,-50 6.5,-47 L9,-9 Z",1.2,"#e2d3b4")+solid("M2,-49 Q5,-48.5 6.5,-47 L9,-9 L3,-9 L4.4,-22 L2.6,-34 Z",INK,.72);
-  g+=pen("M-4,-12 L-3,-44 M-1,-11 L-.6,-46 M-7,-20 h6 M-6.5,-30 h5",.5,SOFT)+pen("M-6.6,-30 q6.6,3 13.2,0",.7);
-  g+=fillP("M-4,-48 Q-4.4,-57 0,-58 Q4.4,-57 4,-48 Z",1,"#e2d3b4")+solid("M0,-58 Q4.4,-57 4,-48 L1.6,-48 L2,-55 Z",INK,.7)
-    +pen("M-4.4,-54 h8.8 M0,-58 v-4 M-2.4,-57.4 l-1,-3 M2.4,-57.4 l1,-3",.7);
-  g+=fillP("M-6,-44 L-10.5,-58 L-13.5,-68 L-10,-69 L-8,-59 L-3.6,-46 Z",1,"#e2d3b4")+pen("M-14,-68 l-.6,-3 M-12.6,-69 l0,-3.4 M-11.2,-69 l.6,-3",.8);
-  g+=pen("M6.5,-42 L9.5,-26 M9.5,-26 V-6",1.2)+fillP("M9.5,-24 q6,1 6,6 q-4,-1 -6,1 z",.9,"#cbbd9f");
-  g+=pen("M-14,1 q14,-3 28,0",.6,SOFT);
+function argonath(x,y,side=1){
+  // a king of old carved from the cliff: helm and crown, long fluted robe, axe at his breast, hand raised in warning
+  const ST="#dedad0",SH="#a9a59a";let g="";
+  // the rock he stands on and the cliff wall behind his shoulder
+  g+=`<path d="M${-26*side},6 L${-24*side},-10 L${-18*side},-16 L${-30*side},-30 L${-32*side},-70 L${-26*side},-96 L${-34*side},-60 L${-38*side},6 Z" fill="${PAPER}" stroke="${INK}" stroke-width=".9"/>`;
+  g+=pen(`M${-30*side},-20 l${-4*side},10 M${-31*side},-46 l${-3*side},12 M${-28*side},-76 l${-3*side},10`,.5,SOFT);
+  g+=`<path d="M-22,6 L-20,-6 L-12,-12 L12,-12 L20,-6 L22,6 Z" fill="${PAPER}" stroke="${INK}" stroke-width=".9"/>`+pen("M-16,0 l6,-6 M-4,2 l4,-8 M8,0 l6,-6",.5,SOFT);
+  // the robe: broad at the hem, falling in long folds from the shoulders
+  g+=`<path d="M-9,-60 Q-11,-40 -14,-12 H14 Q11,-40 9,-60 Z" fill="${ST}" stroke="${INK}" stroke-width="1"/>`;
+  g+=`<path d="M3,-60 Q6,-40 7,-12 H14 Q11,-40 9,-60 Z" fill="${SH}"/>`;
+  for(let i=-10;i<=10;i+=2.5)g+=pen(`M${f(i*.62)},-58 Q${f(i*.95)},-36 ${f(i*1.25)},-13`,.45,i>2?"#6e6a60":"#8e8a7e");
+  g+=pen("M-12,-14 q2,-2 4,0 q2,-2 4,0 q2,-2 4,0 q2,-2 4,0 q2,-2 4,0 q2,-2 4,0",.5);
+  // shoulders and a cloak drawn over them
+  g+=`<path d="M-11,-58 Q-6,-64 0,-63 Q6,-64 11,-58 L9,-52 Q0,-56 -9,-52 Z" fill="${ST}" stroke="${INK}" stroke-width=".8"/>`;
+  // the hand at his breast, holding an axe
+  g+=pen("M-6,-46 Q-1,-42 3,-44",1.2)+pen("M2,-58 V-20",1.1)+`<path d="M2,-60 q5,-1 6,4 q-3,1 -6,0 z" fill="${SH}" stroke="${INK}" stroke-width=".6"/>`;
+  // the raised arm and open hand, palm outward
+  g+=`<path d="M8,-57 Q12,-66 11.4,-80 L15.4,-80 Q16,-66 11.6,-54 Z" fill="${ST}" stroke="${INK}" stroke-width=".8"/>`;
+  g+=`<path d="M10.6,-80 V-86 M11.9,-80 V-88 M13.3,-80 V-88.4 M14.6,-80 V-87.4 M15.6,-80 L17.4,-83" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>`
+    +`<path d="M10.6,-80 V-86 M11.9,-80 V-88 M13.3,-80 V-88.4 M14.6,-80 V-87.4" stroke="${ST}" stroke-width=".7" stroke-linecap="round"/>`;
+  // the head: a tall helm with cheek-guards and a crown, a long carved beard
+  g+=`<path d="M-4.6,-60 V-70 Q-4.6,-76 0,-77 Q4.6,-76 4.6,-70 V-60 Q0,-58 -4.6,-60 Z" fill="${ST}" stroke="${INK}" stroke-width=".8"/>`;
+  g+=`<path d="M-2.6,-69 h5.2 v4 h-5.2 z" fill="${SH}"/>`+pen("M-1.4,-68 h.8 M.6,-68 h.8",.6)+pen("M-2,-64 v6 M0,-64 v7 M2,-64 v6",.45,"#6e6a60");
+  g+=`<path d="M-3.6,-76 L-2.6,-81 L-1,-77 L0,-83 L1,-77 L2.6,-81 L3.6,-76 Z" fill="${ST}" stroke="${INK}" stroke-width=".6"/>`+pen("M0,-83 v-3",.8);
   return G(x,y,g,AS);
 }
 // a mallorn as in the old paintings: smooth grey trunk, limbs spreading into billows of gold
@@ -464,7 +479,7 @@ function cover(r,p){
         +`<circle r="1.8" fill="#e8c35a" stroke="${INK}" stroke-width=".5"/><circle cx="-.5" cy="-.5" r=".55" fill="#fff3c4"/></g>`;}
     case "mountains":return `<g class="cp c-cloud"><path d="M-17,7 Q-21,6 -19,1 Q-18,-3 -13,-2 Q-13,-9 -6,-9 Q-3,-14 3,-11 Q8,-14 11,-8 Q17,-9 17,-3 Q22,-1 19,4 Q19,8 13,7 Z" fill="${PAPER}" stroke="${INK}" stroke-width="1.2"/>`
       +`${pen("M-13,-2 q2,1 3,3 M-6,-9 q1,2 0,4 M3,-11 q1,2 0,4 M11,-8 q0,2 -1,4",.6,SOFT)}${pen("M-14,10 h10 M-2,11 h14 M-9,13 h8",.6,SOFT)}</g>`;
-    case "eregion":if(p.spot==="argonath")return `<g class="cp c-lift">${pen("M0,-1 q-3,-4 0,-8 q3,-4 0,-8",.6,SOFT)}</g>`;
+    case "eregion":if(p.spot==="argonath")return `<g class="cp c-lift"><circle cx="-1" cy="2" r="3.4" fill="${PAPER}" stroke="${SOFT}" stroke-width=".5"/><circle cx="2.4" cy="-1" r="2.6" fill="${PAPER}" stroke="${SOFT}" stroke-width=".5"/>${pen("M-2,-3 q-2,-3 0,-6 q2,-3 0,-6",.5,SOFT)}</g>`;
       return `<g class="cp c-door"><path d="M-12,16 V0 a12,12 0 0 1 24,0 V16 Z" fill="#3b2d20" stroke="${INK}" stroke-width="1.2"/>`
       +`${pen("M-12,4 h24 M-12,10 h24 M0,-12 V16",.7,"#8a7158")}${[[-8,1],[8,1],[-8,13],[8,13],[-4,7],[4,7]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r=".9" fill="#c9b18a"/>`).join("")}<circle cx="9" cy="7" r="1.5" fill="none" stroke="#c9b18a" stroke-width=".8"/></g>`;
     case "lorien":return `<g class="cp c-left">${goldTree(-5,14,7.1)}</g><g class="cp c-right">${goldTree(5,15,6.8)}</g>`;
@@ -523,8 +538,7 @@ function backdrop(r,p){
   if(p.spot==="book")return pen("M0,14 V2 M-5.5,14 h11 M-3.4,14 l3.4,-3.4 l3.4,3.4",1.2,"#6b4a2a")+`<path d="M-10,3 L10,-.6 L10,1.6 L-10,5.2 Z" fill="#8a5a2e" stroke="${INK}" stroke-width=".7"/>`;
   if(p.spot==="firework")return pen("M-6,12 L0,-2 L6,12 M-4.4,8 h8.8 M-2.6,4 h5.2",.8,"#6b4a2a")+pen("M-9,12 h18",.7,SOFT)
     +pen("M-8,12 l-.6,-3 M-6,12 l0,-3.4 M7,12 l.6,-3",.5,SOFT);
-  if(p.spot==="argonath")return `<path d="M-6,5 h12 l-2,-4 h-8 z" fill="#9c8c76" stroke="${INK}" stroke-width=".9"/><path d="M-7,1 Q0,-3 7,1" fill="none" stroke="${INK}" stroke-width=".8"/>`
-    +pen("M-4,3 h8 M-2.4,5 l-1,3 M2.4,5 l1,3",.5);
+  if(p.spot==="argonath")return "";
   if(r==="shire"){const W=26+v(2)*8,H=18+v(3)*8;
     let o=`<path d="M${f(-W)},13 Q${f(-W*.9)},${f(-H*.8)} ${f(-W*.1)},${f(-H)} Q${f(W*.85)},${f(-H*.75)} ${f(W)},13 Z" fill="${PAPER}" stroke="${INK}" stroke-width="1.2"/>`;
     o+=`<path d="M-22,13 V2 Q-21,-14 0,-17 Q21,-14 22,2 V13 Z" fill="#ecd48c" stroke="${INK}" stroke-width=".7"/>`+pen("M-22,5 h3 M19,5 h3 M-20,-4 l2,1 M18,-4 l2,1",.4,"#b89a52");
@@ -663,7 +677,7 @@ function extras(){
   // between the river and Mordor
   o+=river([[860,600],[930,604],[1020,608],[1100,612],[1172,618]],1.1)+small(1062,602,"Entwash",12);
   o+=pen("M1184,692 v10 M1189,692 v12 M1194,693 v10",.8)+small(1150,707,"Rauros",12);
-  o+=argonath(1118,648)+argonath(1232,652)+small(1176,684,"the Argonath",15);
+  o+=argonath(1124,650,1)+argonath(1226,654,-1)+small(1176,690,"the Argonath",15);
   o+=marsh(1300,708,48,16)+small(1300,742,"the Deadline Marshes",13);
   o+=forest(1405,700,42,14,9,13,2)+small(1405,728,"Ithilien",13);
   o+=baradDur(1510,528);
@@ -1027,7 +1041,7 @@ function buildMap(){
   for(let i=0;i<70;i++){const x=1340+rnd()*190,y=420+rnd()*190;s+=pen(`M${f(x)},${f(y)} l${f(6+rnd()*6)},${f(-2+J(2))}`,.6,SOFT)}
   s+=mountDoom(1412,566);
   s+=`<text x="1388" y="398" text-anchor="middle" font-family="Fondamento,serif" font-size="38" letter-spacing="1" fill="${INK}">Mordor</text>`+small(1430,585,"where Reviewer 2 dwells",16);
-  s+=small(28,520,"The Great Sea",20,-90)+small(1150,470,"Anduin",16,72);
+  s+=small(28,520,"The Great Sea",20,-90)+small(1124,350,"Anduin",16,72);
   s+=extras()+fillers();
   s+=`<g transform="translate(210,855)">${pen("M0,-72 V72 M-72,0 H72",1.4)}
     <path d="M0,-80 l-6,14 l6,-4 l6,4 z M0,80 l-6,-14 l6,4 l6,-4 z M80,0 l-14,-6 l4,6 l-4,6 z M-80,0 l14,-6 l-4,6 l4,6 z" fill="${INK}"/>
