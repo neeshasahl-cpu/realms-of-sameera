@@ -299,8 +299,8 @@ const BOOKS=P.filter(p=>p.r==="rivendell");
 const WORDS=n=>{const u=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"],T=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
   return n<20?u[n]:n<100?T[Math.floor(n/10)]+(n%10?"-"+u[n%10]:""):String(n)};
 const REALM_SCALE={shire:1.18,eregion:1.22,mountains:.84,lorien:1,orthanc:1.3,rohan:1.15,gondor:1.25};
-const scaleOf=p=>(1+Math.min(Math.sqrt(p.c),15)/45)*(p.spot==="argonath"||p.sp==="book"?1.5:(REALM_SCALE[p.r]||1));
-BOOKS.forEach((p,k)=>{p.spot="book";p.px=[540,632][k%2];p.py=266});
+const scaleOf=p=>(1+Math.min(Math.sqrt(p.c),15)/45)*(p.spot==="argonath"||p.sp==="book"?1.25:(REALM_SCALE[p.r]||1));
+BOOKS.forEach((p,k)=>{p.spot="book";p.px=[535,633][k%2];p.py=[226,210][k%2]});
 placeCluster(by("shire").slice(0,-3),248,480,104,88,.4);
 {const FW=[[186,428],[252,404],[318,430]];by("shire").slice(-3).forEach((p,k)=>{p.spot="firework";p.fw=k;p.px=FW[k][0];p.py=FW[k][1]})}
 placeLine(by("mountains"),[[712,150],[722,250],[700,360],[682,460],[655,560],[640,610]],[18,0]);
@@ -396,6 +396,53 @@ function bookIcon(){
   g+=`<rect x="-9.2" y="-4.4" width="1.8" height="2" fill="${RUB}"/><path d="M0,-2 V5" stroke="#c9b27a" stroke-width=".5"/><path d="M1,5 l.6,4.6 l1,-1 l.6,1.4 l.2,-5" fill="${RUB}"/>`;
   g+=`<path d="M6,-3 Q9,-10 14,-15 Q12,-9 7.4,-3.4 Z" fill="#f6f1e4" stroke="${INK}" stroke-width=".5"/><path d="M6.4,-3 L13.6,-14.6" stroke="#9a8a6a" stroke-width=".4"/>`;
   g+=[[-8,-12],[-3,-15],[3,-13],[-12,-8],[10,-6],[0,-18]].map(([x,y],i)=>`<circle class="tw" cx="${x}" cy="${y}" r="${i%2?.6:.85}" fill="#fff3c4" style="animation-delay:${(i*.2).toFixed(1)}s"/>`).join("");
+  return g;
+}
+// Rivendell after the films: elven halls on the cliffs, swan-neck finials, arched windows, falls and a filigree pavilion
+function rivendellHall(){
+  const STONE="#e6d8bb",SLATE="#cfc6b4",GLASS="#f3e7c8";
+  const arch=(x,y,w,h,fill=GLASS)=>`<path d="M${f(x)},${f(y)} V${f(y-h+w*.6)} Q${f(x)},${f(y-h)} ${f(x+w/2)},${f(y-h-w*.25)} Q${f(x+w)},${f(y-h)} ${f(x+w)},${f(y-h+w*.6)} V${f(y)} Z" fill="${fill}" stroke="${INK}" stroke-width=".6"/>`;
+  const curl=(x,y,d=1)=>pen(`M${f(x)},${f(y)} q${f(d*2.6)},-3.4 ${f(d*.6)},-6.6 q${f(-d*2.2)},-2 ${f(-d*.8)},-4.2 q${f(d*1)},-.6 ${f(d*1.6)},.4`,.8);
+  const roof=(x0,x1,y,h)=>{const m=(x0+x1)/2;let o=`<path d="M${f(x0-3)},${f(y)} Q${f(m-(x1-x0)*.2)},${f(y-h*.55)} ${f(m)},${f(y-h)} Q${f(m+(x1-x0)*.2)},${f(y-h*.55)} ${f(x1+3)},${f(y)} Z" fill="${SLATE}" stroke="${INK}" stroke-width=".9" stroke-linejoin="round"/>`;
+    for(let i=1;i<6;i++){const u=i/6;o+=pen(`M${f(x0-3+(m-x0+3)*u)},${f(y-h*u*.95)} L${f(x0-3+(m-x0+3)*u+3)},${f(y)}`,.35,SOFT)+pen(`M${f(x1+3-(x1+3-m)*u)},${f(y-h*u*.95)} L${f(x1+3-(x1+3-m)*u-3)},${f(y)}`,.35,SOFT)}
+    o+=`<path d="M${f(x1+3)},${f(y)} Q${f(m+(x1-x0)*.2)},${f(y-h*.55)} ${f(m)},${f(y-h)} L${f(m+1.5)},${f(y-h+3)} Q${f(m+(x1-x0)*.25)},${f(y-h*.5)} ${f(x1-2)},${f(y)} Z" fill="${INK}" fill-opacity=".35"/>`;
+    return o+curl(m,y-h,1)+curl(x0-3,y,-1)+curl(x1+3,y,1);};
+  const hall=(x0,x1,base,top,rh,nw)=>{let o=`<path d="M${x0},${base} V${top} H${x1} V${base} Z" fill="${STONE}" stroke="${INK}" stroke-width=".9"/>`;
+    const w=(x1-x0)/(nw*1.6+.6);for(let i=0;i<nw;i++)o+=arch(x0+w*.6+i*w*1.6,base-(base-top)*.22,w,(base-top)*.6);
+    o+=pen(`M${x0-2},${f(base-(base-top)*.18)} H${x1+2}`,.7)+[...Array(nw+1)].map((_,i)=>pen(`M${f(x0+w*.3+i*w*1.6)},${f(base-(base-top)*.18)} v-3`,.4)).join("");
+    return o+roof(x0,x1,top,rh);};
+  let g="";
+  // mountains and falls behind
+  g+=peak(-52,-40,30)+peak(58,-58,34)+peak(8,-64,26);
+  g+=pen("M-86,-78 V-6 M-83,-76 V-6 M80,-96 V-22 M83,-94 V-22",.55,SOFT)+pen("M-90,-6 q3,-3 5,0 q3,-3 5,0 M76,-22 q3,-3 5,0 q3,-3 5,0",.6,SOFT);
+  // the cliffs, with a rock arch beneath the great hall
+  g+=`<path d="M-96,36 L-96,-6 L-22,-6 L-19,4 L31,4 L33,-22 L96,-22 L96,36 Z" fill="${PAPER}" stroke="${INK}" stroke-width="1.1" stroke-linejoin="round"/>`;
+  for(let i=0;i<26;i++){const x=-92+i*7.2+J(2),top=x<-20?-4:x<32?6:-20;g+=pen(`M${f(x)},${f(top+3+J(3))} l${f(J(2))},${f(8+rnd()*12)}`,.45,SOFT)}
+  g+=pen("M-96,10 l14,-3 l10,5 l16,-4 M33,0 l14,4 l18,-3 l20,5 M-60,22 l16,-3 l14,4",.6);
+  g+=`<path d="M-4,36 V20 Q4,8 14,20 V36 Z" fill="${INK}" fill-opacity=".85"/><path d="M-66,36 V26 Q-60,18 -54,26 V36 Z" fill="${INK}" fill-opacity=".7"/>`;
+  g+=pen("M-4,20 Q4,8 14,20 M-8,22 Q4,4 18,22",.6);
+  // the left wing
+  g+=hall(-80,-50,-6,-26,18,3);
+  // the great hall: an open arcade below, tall windows above, a balcony between
+  g+=`<path d="M-27,4 V-34 H27 V4 Z" fill="${STONE}" stroke="${INK}" stroke-width=".9"/>`;
+  for(let i=0;i<5;i++)g+=arch(-24+i*10,4,7,10,"#3a2c1e");
+  for(let i=0;i<5;i++)g+=arch(-24+i*10,-12,7,16);
+  g+=pen("M-29,-8 H29 M-29,-10.5 H29",.6)+[...Array(12)].map((_,i)=>pen(`M${-28+i*5},-8 v-2.5`,.35)).join("");
+  g+=roof(-27,27,-34,26)+`<path d="M18,-34 v-26 h5 v26 z" fill="${STONE}" stroke="${INK}" stroke-width=".7"/>`+`<path d="M17,-60 L20.5,-74 L24,-60 Z" fill="${SLATE}" stroke="${INK}" stroke-width=".7"/>`+curl(20.5,-74,1);
+  // the upper house and its slender tower on the high cliff
+  g+=hall(38,72,-22,-46,22,3)+`<path d="M76,-22 V-60 H88 V-22 Z" fill="${STONE}" stroke="${INK}" stroke-width=".9"/>`+arch(79,-40,6,12)+arch(79,-26,6,8,"#3a2c1e");
+  g+=`<path d="M74,-60 Q82,-70 82,-86 Q82,-70 90,-60 Z" fill="${SLATE}" stroke="${INK}" stroke-width=".8"/>`+curl(82,-86,-1)+pen("M74,-60 h16",.8);
+  g+=pen("M38,-26 H74 M38,-28.5 H74",.6);
+  // a little bridge from the great hall to the high cliff
+  g+=pen("M27,-6 Q31,-14 36,-20 M27,-3 Q32,-11 37,-17",.7);
+  // the open pavilion with filigree arches, where the first book rests
+  const px0=-46,px1=-20,pb=-6,pt=-30;
+  g+=`<path d="M${px0-2},${pb} h${px1-px0+4} v2 h-${px1-px0+4} z" fill="${STONE}" stroke="${INK}" stroke-width=".7"/>`;
+  for(let i=0;i<=4;i++){const x=px0+i*(px1-px0)/4;g+=pen(`M${f(x)},${pb} V${pt}`,.9)}
+  for(let i=0;i<4;i++){const a=px0+i*(px1-px0)/4,b=a+(px1-px0)/4,m=(a+b)/2;g+=pen(`M${f(a)},${pt+6} Q${f(a)},${pt} ${f(m)},${pt-3} Q${f(b)},${pt} ${f(b)},${pt+6}`,.6)+`<circle cx="${f(m)}" cy="${pt+2}" r=".9" fill="none" stroke="${INK}" stroke-width=".4"/>`}
+  g+=`<path d="M${px0-3},${pt} Q${(px0+px1)/2},${pt-20} ${px1+3},${pt} Z" fill="${SLATE}" stroke="${INK}" stroke-width=".8"/>`+pen(`M${(px0+px1)/2},${pt-15} v-6 M${px0+4},${pt-3} Q${(px0+px1)/2},${pt-15} ${px1-4},${pt-3} M${px0+9},${pt-6} Q${(px0+px1)/2},${pt-13} ${px1-9},${pt-6}`,.45)+curl((px0+px1)/2,pt-21,1);
+  // trees on the ledges
+  g+=tree(-92,-6,9,1,"oak")+tree(-14,4,8,1,"oak")+tree(93,-22,9,1,"oak")+tree(34,4,7,1,"oak");
   return g;
 }
 // a steady pseudo-random number per paper, so each hobbit hole keeps its own look
@@ -887,7 +934,7 @@ function buildMap(){
   const deco={
     shire:hills(240,470,150,105,24)+grass(240,520,140,40,14),
     mountains:range(RIDGE,34,22)+moriaGate(672,512)+small(672,550,"Moria",14),
-    rivendell:G(570,250,rivendell(0,0),1.9),
+    rivendell:G(570,252,rivendellHall(),1.05),
     eregion:forest(490,612,110,22,10,10,2),
     lorien:goldWood(940,420,185,100,72),
     orthanc:G(640,772,isengard(0,0),1.3)+forest(800,615,64,34,16,11,2,"pine")+ent(866,612)+small(800,668,"Fangorn",15),
